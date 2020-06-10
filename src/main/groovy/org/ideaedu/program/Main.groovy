@@ -25,10 +25,10 @@ import java.sql.DriverManager
  *
  * @author Todd Wallentine todd AT IDEAedu org
  */
-public class Main {
+class Main {
 
-    private static final def INSERT_PROGRAM_SQL = "INSERT INTO CIP (CIPYEAR, CODE, NAME, DEFINITION, CROSSREF, CREATED) VALUES (?, ?, ?, ?, ?, NOW())"
-    private static final def INSERT_MAPPING_SQL = "INSERT INTO CIPTODISC (ID_DISCIPLINE, ID_CIP) VALUES ((SELECT ID_DISCIPLINE FROM DISCIPLINE WHERE CODE = ?), (SELECT ID_CIP FROM CIP WHERE CODE = ?))"
+    private static final def INSERT_PROGRAM_SQL = "INSERT IGNORE INTO CIP (CIPYEAR, CODE, NAME, DEFINITION, CROSSREF, CREATED) VALUES (?, ?, ?, ?, ?, NOW())"
+    private static final def INSERT_MAPPING_SQL = "INSERT IGNORE INTO CIPTODISC (ID_DISCIPLINE, ID_CIP) VALUES ((SELECT ID_DISCIPLINE FROM DISCIPLINE WHERE CODE = ?), (SELECT ID_CIP FROM CIP WHERE CODE = ? AND CIPYEAR = ?))"
 
     private static final def DEFAULT_HOST = 'localhost'
     private static final def DEFAULT_PORT = 3306
@@ -128,6 +128,7 @@ public class Main {
                 // Insert the mapping of the CIP to DISCIPLINE into CIPTODISC
                 insertMappingStatement.setInt(1, disciplineCode)
                 insertMappingStatement.setString(2, code)
+                insertMappingStatement.setInt(3, year)
 
                 def insertMappingResult // 1 if the insert worked and 0 if it did not
                 if(!trialRun) {
